@@ -2,6 +2,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="manifest" href="manifest.json" />
         <title>鞋墊監視器</title>
         <script src="js/other.js"></script>
         <style>
@@ -172,17 +173,17 @@
         </div>
         <script src="js/main.js"></script>
         <script>
-            // if ('serviceWorker' in navigator) {
-            //     window.addEventListener('load', () => {
-            //         navigator.serviceWorker.register('./pwa-worker.js')
-            //         .then(registration => {
-            //             console.log('Service Worker registered:', registration);
-            //         })
-            //         .catch(error => {
-            //             console.error('Service Worker registration failed:', error);
-            //         });
-            //     });
-            // }
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('./js/pwa-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered:', registration);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+                });
+            }
         </script>
     </body>
 </html>

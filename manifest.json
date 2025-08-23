@@ -1,0 +1,15 @@
+{
+  "name": "鞋墊監視器",
+  "short_name": "鞋墊監視",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#808080",
+  "icons": [
+    {
+      "src": "./assets/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
