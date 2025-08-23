@@ -1,0 +1,188 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>鞋墊監視器</title>
+        <script src="js/other.js"></script>
+        <style>
+            html, body {
+                padding:0;
+                margin:0;
+                height:100%;
+                width:100%;
+                overflow: hidden;
+            }
+            td {
+                text-align: center;
+            }
+            .main-div {
+                display:flex;
+                height:100%;
+                width:100%;
+            }
+            .canvas-div {
+                display:flex;
+                justify-content: center;
+                align-content: center;
+                flex-wrap: wrap;
+            }
+            .other-div {
+                display:flex;
+                flex-direction: column;
+                justify-content: flex-end;
+            }
+            .data-table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            .data-table td{
+                border: 1px solid black;
+                width: 6.667%;
+            }
+            .info-table {
+                border-collapse: collapse;
+                width: 50%;
+            }
+            .info-table td{
+                border: 1px solid black;
+            }
+            @media (orientation: portrait) {
+                .main-div {
+                    flex-direction: column;
+                }
+                .canvas-div {
+                    height:50%;
+                    width:100%;
+                }
+                .other-div {
+                    height:50%;
+                    width:100%;
+                }
+            }
+            @media (orientation: landscape) {
+                .main-div {
+                    flex-direction: row;
+                }
+                .canvas-div {
+                    height:100%;
+                    width:50%;
+                }
+                .other-div {
+                    height:100%;
+                    width:50%;
+                }
+            }
+            #web-ble-not-available {
+                position:absolute;
+                height:100%;
+                width:100%;
+                top:0;
+                background:rgba(0,0,0,0.8);
+                align-items: center;
+                justify-content: center;
+            }
+            #web-ble-not-available h1{
+                font-family:sans-serif;
+                color:#ff0000;
+                text-align:center;
+            }
+            #info {
+                width:100%;
+                resize:none;
+            }
+            #full-info {
+                position:absolute;
+                height:100%;
+                width:100%;
+                top:0;
+                background:rgba(0,0,0,0.8);
+                align-items: center;
+                justify-content: center;
+            }
+            #full-info h1{
+                font-family:sans-serif;
+                color:#ff0000;
+                text-align:center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="main-div">
+            <div class="canvas-div">
+                <canvas id="canvas-L" height="900px" width="400px" style="height:auto;width:auto;max-height:100%;max-width:50%;"></canvas>
+                <canvas id="canvas-R" height="900px" width="400px" style="height:auto;width:auto;max-height:100%;max-width:50%;"></canvas>
+            </div>
+            <div class="other-div">
+                <div style="height:100%;display:flex;flex-direction:column;align-items:center;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <td>0</td><td>1</td><td>2</td>
+                                <td>3</td><td>4</td><td>5</td>
+                                <td>6</td><td>7</td><td>8</td>
+                                <td>9</td><td>10</td><td>11</td>
+                                <td>12</td><td>13</td><td>14</td>
+                            </tr>
+                        </thead>
+                        <tr id="sensor-r-data-view">
+                            <td>0</td><td>0</td><td>0</td>
+                            <td>0</td><td>0</td><td>0</td>
+                            <td>0</td><td>0</td><td>0</td>
+                            <td>0</td><td>0</td><td>0</td>
+                            <td>0</td><td>0</td><td>0</td>
+                        </tr>
+                        <tr id="sensor-l-data-view">
+                            <td>0</td><td>0</td><td>0</td>
+                            <td>0</td><td>0</td><td>0</td>
+                            <td>0</td><td>0</td><td>0</td>
+                            <td>0</td><td>0</td><td>0</td>
+                            <td>0</td><td>0</td><td>0</td>
+                        </tr>
+                    </table><br>
+                    <table class="info-table">
+                        <tr>
+                            <td style="width:20%;">裝置</td>
+                            <td style="width:40%;">紀錄時間</td>
+                            <td style="width:40%;">紀錄數量</td>
+                        </tr>
+                        <tr id="record-info-r">
+                            <td>R</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr id="record-info-l">
+                            <td>L</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <textarea id="info" rows="5" readonly></textarea>
+                    <div style="overflow:hidden;white-space:nowrap;">
+                        <button id="button-connect" style="height:35px;width:40%;font-size:20px;font-weight:bold;">連接</button>
+                        <button id="button-record-left" style="height:35px;width:29%;font-size:20px;font-weight:bold;" disabled>紀錄左腳</button>
+                        <button id="button-record-right" style="height:35px;width:29%;font-size:20px;font-weight:bold;" disabled>紀錄右腳</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="full-info" style="display:none;">
+            <h1>APPLE</h1>
+        </div>
+        <script src="js/main.js"></script>
+        <script>
+            // if ('serviceWorker' in navigator) {
+            //     window.addEventListener('load', () => {
+            //         navigator.serviceWorker.register('./pwa-worker.js')
+            //         .then(registration => {
+            //             console.log('Service Worker registered:', registration);
+            //         })
+            //         .catch(error => {
+            //             console.error('Service Worker registration failed:', error);
+            //         });
+            //     });
+            // }
+        </script>
+    </body>
+</html>
