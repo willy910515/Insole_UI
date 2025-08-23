@@ -195,15 +195,15 @@ function get_color(value,max=100,min=0){
       if (clampedValue <= mid) {
         // 從 min 到 mid 的區間 (藍色 -> 綠色)
         const ratio = (clampedValue - min) / (mid - min);
-        r = 0;
+        r = Math.round(255 * (1 - ratio));
         g = Math.round(255 * ratio);
-        b = Math.round(255 * (1 - ratio));
+        b = 0;
       } else {
         // 從 mid 到 max 的區間 (綠色 -> 紅色)
         const ratio = (clampedValue - mid) / (max - mid);
-        r = Math.round(255 * ratio);
+        r = 0;
         g = Math.round(255 * (1 - ratio));
-        b = 0;
+        b = Math.round(255 * ratio);
       }
       // 確保 RGB 值在 0-255 的範圍內
       r = Math.max(0, Math.min(255, r));
