@@ -1,4 +1,4 @@
-const CACHE_NAME = 'insole-pwa-cache-v1.0';
+const CACHE_NAME = 'insole-pwa-cache-v1.01';
 const urlsToCache = [
   './',
   './index.html',
@@ -26,4 +26,5 @@ self.addEventListener('fetch', (event) => {
         return fetch(event.request);
       })
   );
+
 });
