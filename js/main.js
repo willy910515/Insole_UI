@@ -99,6 +99,32 @@ let data_R=new Array(15).fill(0);
 let data_L=new Array(15).fill(0);
 let connected_R=false, connected_L=false;
 (async(env)=>{
+    function get_data(data){
+        const device_id=new Uint8Array(data.buffer, 0, 1)[0];
+        console.log(device_id)
+        if(device_id===0x34){   // 右腳
+            const value=Array.from(new Int16Array(new Uint8Array(data.buffer, 1, 30).slice(0,30).buffer));
+            show_data(data_view_r, value);
+            data_R=value;
+            if(recorded_r){
+                record_data_r.push({
+                    time: new Date().getTime(),
+                    data:value,
+                });
+            }
+        }else if(device_id===0x33){
+            const value=Array.from(new Int16Array(new Uint8Array(data.buffer, 1, 30).slice(0,30).buffer));
+            show_data(data_view_l, value);
+            data_L=value;
+            if(recorded_l){
+                record_data_l.push({
+                    time: new Date().getTime(),
+                    data:value,
+                });
+            }
+        }
+    }
+
     env.serial_R=new BleSerial();
     env.serial_R.on('connect', ()=>{
         print_info('右腳成功連接!');
@@ -111,15 +137,7 @@ let connected_R=false, connected_L=false;
         button_record_right.disabled=true;
     });
     env.serial_R.on('getData',(new_data)=>{
-        const value=Array.from(new Int16Array(new Uint8Array(new_data.buffer, 1, 30).slice(0,30).buffer));
-        show_data(data_view_r, value);
-        data_R=value;
-        if(recorded_r){
-            record_data_r.push({
-                time: new Date().getTime(),
-                data:value,
-            });
-        }
+        get_data(new_data);
     });
     env.serial_L=new BleSerial();
     env.serial_L.on('connect', ()=>{
@@ -133,15 +151,7 @@ let connected_R=false, connected_L=false;
         button_record_left.disabled=true;
     });
     env.serial_L.on('getData',(new_data)=>{
-        const value=Array.from(new Int16Array(new Uint8Array(new_data.buffer, 1, 30).slice(0,30).buffer));
-        show_data(data_view_l, value);
-        data_L=value;
-        if(recorded_l){
-            record_data_l.push({
-                time: new Date().getTime(),
-                data:value,
-            });
-        }
+        get_data(new_data);
     });
 
     button_connect.addEventListener('click',async ()=>{
@@ -185,30 +195,30 @@ let connected_R=false, connected_L=false;
 })(window);
 
 function get_color(value,max=100,min=0){
-      if (min === max) {
-        return { r: 0, g: 255, b: 0 }; // 如果 min 和 max 相等，預設為中間值綠色
-      }
-      // 將數值限制在 min 和 max 之間
-      let clampedValue = Math.max(min, Math.min(value, max));
-      const mid = (min + max) / 2;
-      let r, g, b;
-      if (clampedValue <= mid) {
-        // 從 min 到 mid 的區間 (藍色 -> 綠色)
-        const ratio = (clampedValue - min) / (mid - min);
-        r = 0;
-        g = Math.round(255 * ratio);
-        b = Math.round(255 * (1 - ratio));
-      } else {
-        // 從 mid 到 max 的區間 (綠色 -> 紅色)
-        const ratio = (clampedValue - mid) / (max - mid);
-        r = Math.round(255 * ratio);
-        g = Math.round(255 * (1 - ratio));
-        b = 0;
-      }
-      // 確保 RGB 值在 0-255 的範圍內
-      r = Math.max(0, Math.min(255, r));
-      g = Math.max(0, Math.min(255, g));
-      b = Math.max(0, Math.min(255, b));
+    if (min === max) {
+    return { r: 0, g: 255, b: 0 }; // 如果 min 和 max 相等，預設為中間值綠色
+    }
+    // 將數值限制在 min 和 max 之間
+    let clampedValue = Math.max(min, Math.min(value, max));
+    const mid = (min + max) / 2;
+    let r, g, b;
+    if (clampedValue <= mid) {
+    // 從 min 到 mid 的區間 (藍色 -> 綠色)
+    const ratio = (clampedValue - min) / (mid - min);
+    r = 0;
+    g = Math.round(255 * ratio);
+    b = Math.round(255 * (1 - ratio));
+    } else {
+    // 從 mid 到 max 的區間 (綠色 -> 紅色)
+    const ratio = (clampedValue - mid) / (max - mid);
+    r = Math.round(255 * ratio);
+    g = Math.round(255 * (1 - ratio));
+    b = 0;
+    }
+    // 確保 RGB 值在 0-255 的範圍內
+    r = Math.max(0, Math.min(255, r));
+    g = Math.max(0, Math.min(255, g));
+    b = Math.max(0, Math.min(255, b));
     return (`rgb(${r},${g},${b})`);
 }
 
