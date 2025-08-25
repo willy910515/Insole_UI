@@ -101,8 +101,7 @@ let connected_R=false, connected_L=false;
 (async(env)=>{
     function get_data(data){
         const device_id=new Uint8Array(data.buffer, 0, 1)[0];
-        // console.log(device_id)
-        if(device_id===0x34){   // 右腳
+        if(device_id===34){   // 右腳
             const value=Array.from(new Int16Array(new Uint8Array(data.buffer, 1, 30).slice(0,30).buffer));
             show_data(data_view_r, value);
             data_R=value;
@@ -112,7 +111,7 @@ let connected_R=false, connected_L=false;
                     data:value,
                 });
             }
-        }else if(device_id===0x33){
+        }else if(device_id===33){
             const value=Array.from(new Int16Array(new Uint8Array(data.buffer, 1, 30).slice(0,30).buffer));
             show_data(data_view_l, value);
             data_L=value;
